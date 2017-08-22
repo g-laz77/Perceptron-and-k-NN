@@ -2,24 +2,19 @@ import pandas as pd
 import numpy as np
 
 # Calculate the Gini index for a split dataset
-def gini_index(groups, classes):
-	# count all samples at split point
+def cost(groups, classes):
 	n_instances = sum([len(group) for group in groups])
-	# sum weighted Gini index for each group
-	gini = 0.0
+	cost = 0.0
 	for group in groups:
 		size = len(group)
-		# avoid divide by zero
 		if size == 0:
 			continue
 		score = 0.0
-		# score the group based on the score for each class
 		for class_val in classes:
 			p = [row['left'] for row in group].count(class_val) / size
 			score += p * p
-		# weight the group score by its relative size
-		gini += (1.0 - score) * (size / n_instances)
-	return gini
+		cost += (1.0 - score) * (size / n_instances)
+	return cost
 
 # Split a dataset based on an attribute and an attribute value
 def test_split(index, value, dataset):
@@ -32,51 +27,65 @@ def test_split(index, value, dataset):
 	return left, right
 
 # Select the best split point for a dataset
-def get_split(dataset):
-	class_values = list(set(row['left'] for row in dataset))
-	best_index = 999
-    b_value = 999
-    b_score =999
-    b_groups = None
-	for index in range(len(dataset[0])-1):
+def best_split(dataset):
+	classes = list(set(row[-4] for row in dataset))
+	best_index = 10000
+    best_value = 10000
+    best_score = 10000
+    best_groups = None
+	for index in range(len(dataset[0])):
+        if index == 6:
+            continue
 		for row in dataset:
 			groups = test_split(index, row[index], dataset)
-			gini = gini_index(groups, class_values)
-			if gini < b_score:
-				b_index = index
-                b_value = row[index]
-                b_score = gini
-                b_groups = groups
+			cost = cost(groups, classes)
+			if cost < best_score:
+				best_index = index
+                best_value = row[index]
+                best_score = cost
+                best_groups = groups
 
 	return {'index':b_index, 'value':b_value, 'groups':b_groups}
+
+# Create a terminal node value
+def node_terminal_eval(group):
+	classes = [row[-4] for row in group]
+	return max(set(classses), key=classes.count)
 
 # Create child splits for a node or make terminal
 def split(node, max_depth, min_size, depth):
 	left, right = node['groups']
-	del(node['groups'])
-	# check for a no split
+	# del(node['groups'])
+    #to prevent overfitting
+    if depth >= max_depth:
+		node['l'] = node_terminal_eval(left) 
+        node['r'] = node_terminal_eval(right)
+		return
+    #to prevent overfitting
 	if not left or not right:
-		node['left'] = node['right'] = to_terminal(left + right)
+		node['l'] = node['r'] = node_terminal_eval(left + right)
 		return
-	# check for max depth
-	if depth >= max_depth:
-		node['left'], node['right'] = to_terminal(left), to_terminal(right)
-		return
-	# process left child
+	
 	if len(left) <= min_size:
-		node['left'] = to_terminal(left)
+		node['l'] = node_terminal_eval(left)
 	else:
-		node['left'] = get_split(left)
-		split(node['left'], max_depth, min_size, depth+1)
-	# process right child
+		node['l'] = best_split(left)
+		split(node['l'], max_depth, min_size, depth+1)
+
 	if len(right) <= min_size:
-		node['right'] = to_terminal(right)
+		node['r'] = node_terminal_eval(right)
 	else:
-		node['right'] = get_split(right)
-		split(node['right'], max_depth, min_size, depth+1)
+		node['r'] = best_split(right)
+		split(node['r'], max_depth, min_size, depth+1)
  
 # Build a decision tree
 def build_tree(train, max_depth, min_size):
-	root = get_split(train)
+	root = best_split(train)
 	split(root, max_depth, min_size, 1)
 	return root
+
+datafile = pd.read_csv("~/Documents/smai/assignment-1/dummy/datasets/q3/decision_tree_train.csv")
+train_data = datafile.iloc[1:,0:].values
+num_rows, num_cols = train_data.shape[:]
+
+build_tree(train_data,5,10)
