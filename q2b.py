@@ -20,7 +20,7 @@ num_rows, num_cols = train_data.shape[:]
 a = np.zeros((1, num_cols))
 #print(num_rows,num_cols)
 b = 50
-eta = 0.01
+eta = 0.001
 
 for i in range(len(train_class)):       # Multiply by -1
     if train_class[i] == 2:
@@ -53,7 +53,7 @@ def descent(weight_vec):            #gradient descent
     # print(weight_vec)
     return weight_vec, err
 
-for i in range(8000):        #number of epochs [Trial and error]
+for i in range(15000):        #number of epochs [Trial and error]
     count = 0
     a, err= descent(a)
     print(err)
