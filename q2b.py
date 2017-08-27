@@ -25,17 +25,16 @@ for i in range(len(train_class)):       # Multiply by -1
             train_data[i][j] *= -1
 
 def descent(weight_vec):            #gradient descent
-    prod = np.dot(train_data,np.transpose(weight_vec))
     summ = np.zeros((1, num_cols))
     err = 0
-    print(prod)
-    for i in range(len(prod)):
-        if prod[i] < float(b):
-            err += 1
-            modulus = np.dot(train_data[i],train_data[i])
+    for tr in range(len(train_data)):
+        prod = np.dot(weight_vec,train_data[tr])
+        if prod <= float(b):
+            modulus = np.dot(train_data[tr],train_data[tr])
             const = (b - prod) / modulus
-            temp = train_data[i]
-            summ = np.add(summ,temp*const)
+            summ = np.add(summ,train_data[tr]*const)
+            err += 1
+    
     weight_vec = np.add(weight_vec,summ)
     return weight_vec, err
 
@@ -45,7 +44,7 @@ for i in range(200):        #number of epochs [Trial and error]
     print(err)
     if err == 0:
         print("Trained the weight vector")
-        break
+    break
 
 #Testing
 
