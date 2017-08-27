@@ -1,9 +1,11 @@
 import pandas as pd
 import numpy as np
+import sys
 
 # TRAINING
-
-datafile = pd.read_csv("~/Documents/smai/assignment-1/dummy/datasets/q1/train.csv")
+train = sys.argv[1]
+test = sys.argv[2]
+datafile = pd.read_csv(train)
 train_data = datafile.iloc[0:,1:].values
 # print(train_data[0])
 train_class = datafile.iloc[0:,0].values
@@ -59,7 +61,7 @@ def testFile(test_data, rows):
                 count += 1
     return count
 
-datafile = pd.read_csv("~/Documents/smai/assignment-1/dummy/datasets/q1/test.csv")
+datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,1:].values
 num_rows, num_cols = test_data.shape[:]
 print(num_rows,num_cols)
