@@ -36,7 +36,7 @@ while(1):
     #for i in range(num_rows):
         #print(i)
     w, err = correct(w)
-    count += err
+    count = err
 
     print(count)
     if count == 0:
