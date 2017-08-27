@@ -8,7 +8,7 @@ import numpy as np
 # train_class = datafile.iloc[0:,10].values
 # #num_rows = train_data.shape[0]
 # #train_data = np.c_[np.ones((num_rows,1)), train_data]
-datafile = np.genfromtxt("/Users/sphinx/Documents/smai/assignment-1/dummy/datasets/q2/train.csv",delimiter=",")
+datafile = np.genfromtxt("/Users/sphinx/Documents/smai/assignment-1/dummy/datasets/q2/q2_breast_cancer.train.csv",delimiter=",")
 train_data = datafile[0:,1:10]
 train_class = datafile[0:,10]
 num_rows, num_cols = train_data.shape[:]
