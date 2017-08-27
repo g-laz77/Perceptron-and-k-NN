@@ -1,20 +1,23 @@
 import pandas as pd
 import numpy as np
+import sys
 
 # TRAINING
-# datafile = pd.read_csv("~/Documents/smai/assignment-1/dummy/datasets/q2/train.csv")
-# train_data = datafile.iloc[0:,1:9].values
-# # print(train_data[0])
-# train_class = datafile.iloc[0:,10].values
-# #num_rows = train_data.shape[0]
-# #train_data = np.c_[np.ones((num_rows,1)), train_data]
-datafile = np.genfromtxt("/Users/sphinx/Documents/smai/assignment-1/dummy/datasets/q2/train.csv",delimiter=",")
-train_data = datafile[0:,1:10]
-train_class = datafile[0:,10]
+train = sys.argv[1]
+test = sys.argv[2]
+datafile = pd.read_csv(train)
+train_data = datafile.iloc[0:,1:10].values
+# print(train_data[0])
+train_class = datafile.iloc[0:,10].values
+
+num_rows, num_cols = train_data.shape[:]
+for i in range(num_rows):
+    train_data[i][5] = int(train_data[i][5])
+train_data = np.c_[np.ones((num_rows,1)), train_data]
 num_rows, num_cols = train_data.shape[:]
 a = np.zeros((1, num_cols))
 print(num_rows,num_cols)
-b = 35
+b = 50
 
 for i in range(len(train_class)):       # Multiply by -1
     if train_class[i] == 2:
@@ -25,15 +28,14 @@ def descent(weight_vec):            #gradient descent
     prod = np.dot(train_data,np.transpose(weight_vec))
     summ = np.zeros((1, num_cols))
     err = 0
+    print(prod)
     for i in range(len(prod)):
         if prod[i] < float(b):
             err += 1
             modulus = np.dot(train_data[i],train_data[i])
             const = (b - prod) / modulus
             temp = train_data[i]
-            for elem in range(len(temp)):
-                temp[elem] *= const
-            summ = np.add(summ,temp)
+            summ = np.add(summ,temp*const)
     weight_vec = np.add(weight_vec,summ)
     return weight_vec, err
 
@@ -61,7 +63,7 @@ def testFile(test_data, rows):
                 count += 1
     return count
 
-datafile = pd.read_csv("~/Documents/smai/assignment-1/dummy/datasets/q2/test.csv")
+datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,1:9].values
 num_rows, num_cols = test_data.shape[:]
 print(num_rows,num_cols)
