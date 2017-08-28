@@ -16,7 +16,7 @@ for i in range(num_rows):
 train_data = np.c_[np.ones((num_rows,1)), train_data]
 num_rows, num_cols = train_data.shape[:]
 a = np.zeros((1, num_cols))
-print(num_rows,num_cols)
+print num_rows,num_cols
 b = 50
 
 for i in range(len(train_class)):       # Multiply by -1
@@ -44,7 +44,7 @@ for i in range(1000):        #number of epochs [Trial and error]
         a, err = relax(i, a)
         count += err
 
-    print(count)
+    print count
     if count == 0:
         print("Trained the weight vector")
         break
@@ -68,7 +68,7 @@ def testFile(test_data, rows):
 datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,1:10].values
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols
 num_rows, num_cols = test_data.shape[:]
 for i in range(num_rows):
     test_data[i][5] = int(test_data[i][5])
@@ -79,7 +79,7 @@ test_class = datafile.iloc[0:,10].values
 num_rows = test_data.shape[0]
 #test_data = np.c_[np.ones((num_rows,1)), test_data]
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols
 
 count = testFile(test_data, num_rows)
-print(count/float(num_rows))
+print count/float(num_rows)

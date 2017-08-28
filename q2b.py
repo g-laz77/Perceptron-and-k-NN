@@ -56,9 +56,9 @@ def descent(weight_vec):            #gradient descent
 for i in range(15000):        #number of epochs [Trial and error]
     count = 0
     a, err= descent(a)
-    print(err)
+    print err
     if err == 0:
-        print("Trained the weight vector")
+        print "Trained the weight vector"
         break
 
 #Testing
@@ -80,12 +80,12 @@ def testFile(test_data, rows):
 datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,1:10].values
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols 
 test_class = datafile.iloc[0:,10].values
 
 test_data = np.c_[np.ones((num_rows,1)), test_data]
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols
 
 count = testFile(test_data, num_rows)
-print(count/float(num_rows))
+print count/float(num_rows)

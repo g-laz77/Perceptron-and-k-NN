@@ -13,7 +13,7 @@ num_rows = train_data.shape[0]
 train_data = np.c_[np.ones((num_rows,1)), train_data]
 num_rows, num_cols = train_data.shape[:]
 w = np.zeros((1, num_cols))
-print(num_rows,num_cols)
+print num_rows,num_cols
 
 def correct(weight_vec):
     prod = np.dot(train_data,np.transpose(weight_vec))
@@ -40,9 +40,9 @@ while(1):
     w, err = correct(w)
     count = err
 
-    print(count)
+    print count
     if count == 0:
-        print("Trained the weight vector")
+        print "Trained the weight vector"
         break
 
 #Testing
@@ -64,13 +64,13 @@ def testFile(test_data, rows):
 datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,1:].values
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols
 # print(train_data[0])
 test_class = datafile.iloc[0:,0].values
 num_rows = test_data.shape[0]
 test_data = np.c_[np.ones((num_rows,1)), test_data]
 num_rows, num_cols = test_data.shape[:]
-print(num_rows,num_cols)
+print num_rows,num_cols
 
 count = testFile(test_data, num_rows)
-print(count/float(num_rows))
+print count/float(num_rows)
