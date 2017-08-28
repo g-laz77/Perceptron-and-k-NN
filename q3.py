@@ -14,6 +14,7 @@ for i in range(10):
 def entropy_cost(groups, classes):
 	n_instances = sum([len(group) for group in groups])
 	cost = 0.0
+	#print(groups)
 	for group in groups:
 		size = len(group)
 		if size == 0:
@@ -27,11 +28,12 @@ def entropy_cost(groups, classes):
 			if p != 0:
 				score -= p/size * math.log(p/size,2)
 		cost += score
+	print("Cost:",cost)
 	return cost
 
 # Split a dataset based on an attribute and an attribute value
 def train_split(index, value, dic, dataset, typ):
-	left, right = list(), list()
+	left, right = [], []
 	for row in dataset:
 		if typ == "continuous":
 			if row[index] < value:
@@ -53,8 +55,8 @@ def train_split(index, value, dic, dataset, typ):
 
 # Select the best split point for a dataset
 def best_split(dataset):
-	classes = list(set(row[-4] for row in dataset))
-	best_index = 0
+	classes = list(set(dataset[i][6] for i in range(len(dataset))))
+	best_index = -1
 	best_value = 0
 	least_entropy = 10000
 	best_groups = None
@@ -62,8 +64,9 @@ def best_split(dataset):
 		print("---------------------------",index,"---------------------------")
 		if index == 6:
 			continue
-		print(dataset)
-		data_val = dataset[0:,index]
+		
+		data_val = list(dataset[i][index] for i in range(len(dataset)))
+		#print(data_val)
 		distinct = list(set(dt for dt in data_val))
 		dict_dis = dict()
 		counter = 0
@@ -104,7 +107,7 @@ def best_split(dataset):
 					best_value = float((mx-mn)*0.01*val)
 					least_entropy = entropy
 					best_groups = groups
-		print("Least Entropy:",least_entropy,index,best_value)
+		print("Least Entropy:",least_entropy,best_index,best_value)
 
 	return {'index':best_index, 'value':best_value, 'groups':best_groups}
 
@@ -156,6 +159,7 @@ datafile = pd.read_csv(train)  #("~/Documents/smai/assignment-1/dummy/datasets/q
 train_data = datafile.iloc[1:,0:].values
 train_class = datafile.iloc[1:,6]
 num_rows, num_cols = train_data.shape[:]
+
 
 k = build_tree(train_data,5,50)
 # while(1):
