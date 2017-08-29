@@ -14,21 +14,18 @@ for i in range(10):
 def entropy_cost(groups, classes):
 	n_instances = sum([len(group) for group in groups])
 	cost = 0.0
-	#print(groups)
 	for group in groups:
 		size = len(group)
 		if size == 0:
 			continue
 		score = 0.0
 		for class_val in classes:
-			# for row in group:
-			# 	print(row['left'])
 			p = [row[6] for row in group].count(class_val)
-			#print(p,class_val,group)
 			if p != 0:
-				score -= p/size * math.log(p/size,2)
+
+				score -= (float(p)/size * math.log(float(p)/size)) / math.log(2)
 		cost += score
-	print("Cost:",cost)
+	print "Cost:",cost 
 	return cost
 
 # Split a dataset based on an attribute and an attribute value
@@ -61,7 +58,7 @@ def best_split(dataset):
 	least_entropy = 10000
 	best_groups = None
 	for index in range(len(dataset[0])):
-		print("---------------------------",index,"---------------------------")
+		print "---------------------------",index,"---------------------------"
 		if index == 6:
 			continue
 		
@@ -107,7 +104,7 @@ def best_split(dataset):
 					best_value = float((mx-mn)*0.01*val)
 					least_entropy = entropy
 					best_groups = groups
-		print("Least Entropy:",least_entropy,best_index,best_value)
+		print "Least Entropy:",least_entropy,best_index,best_value
 
 	return {'index':best_index, 'value':best_value, 'groups':best_groups}
 
@@ -124,28 +121,28 @@ def split(node, max_depth, min_size, depth):
 	if depth >= max_depth:
 		node['l'] = node_terminal_eval(left) 
 		node['r'] = node_terminal_eval(right)
-		print("depth")
+		print "depth"
 		return
 	#to prevent overfitting
 	if not left or not right:
 		node['l'] = node['r'] = node_terminal_eval(left + right)
-		print("Nothing")
+		print "Nothing"
 		return
 
 	if len(left) <= min_size:
 		node['l'] = node_terminal_eval(left)
-		print("left_size")
+		print "left_size" 
 	else:
-		print("split_left")
+		print "split_left"
 		print(left)
 		node['l'] = best_split(left)
 		split(node['l'], max_depth, min_size, depth+1)
 
 	if len(right) <= min_size:
-		print("right_size")
+		print "right_size"
 		node['r'] = node_terminal_eval(right)
 	else:
-		print("split_right")
+		print "split_right"
 		node['r'] = best_split(right)
 		split(node['r'], max_depth, min_size, depth+1)
  
@@ -163,5 +160,5 @@ num_rows, num_cols = train_data.shape[:]
 
 k = build_tree(train_data,5,50)
 # while(1):
-print(k)
+print k
 # 	k = k['r']
