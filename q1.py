@@ -60,7 +60,6 @@ def part1():
     while(1):
         count = 0
         for i in range(num_rows):
-
             w1, err = correct1(i, w1, 0)
             count += err
             
@@ -74,7 +73,7 @@ def part2():
         for i in range(num_rows):
             w2, err = correct1(i, w2, 100000)
             count += err
-            
+
         if count == 0:
             break
 
@@ -83,11 +82,8 @@ def part3():
     ite = 0
     while(1):
         count = 0
-
         temp, err = correct2(w3,0)
-        # if ite % 20 == 0:
         w3 = temp
-        # print err
         ite += 1
         if err == 0:
             #print "Trained the weight vector"
@@ -98,11 +94,8 @@ def part4():
     ite = 0
     while(1):
         count = 0
-
         temp, err = correct2(w4,100000)
-        # if ite % 20 == 0:
         w4 = temp
-        # print err
         ite += 1
         if err == 0:
             #print "Trained the weight vector"
@@ -114,36 +107,43 @@ part3()
 part4()
 #Testing
 
-def testFile(test_data, rows, weight_vec):
+def classify(test_data, rows, weight_vec):
     count = 0
     for i in range(rows):
         prod = np.dot(weight_vec,test_data[i])
         if prod >= float(0):
             clas = 1
-            # if test_class[i] == clas:
-            #     count += 1  
             print clas   
         else:
             clas = 0
-            # if test_class[i] == clas:
-            #     count += 1
             print clas
     return count
 
 datafile = pd.read_csv(test)
 test_data = datafile.iloc[0:,0:].values
 num_rows, num_cols = test_data.shape[:]
-#print num_rows,num_cols
-# print(train_data[0])
-#test_class = datafile.iloc[0:,0].values
 num_rows = test_data.shape[0]
 test_data = np.c_[np.ones((num_rows,1)), test_data]
 num_rows, num_cols = test_data.shape[:]
-#print num_rows,num_cols
 
-testFile(test_data, num_rows,w1)
-testFile(test_data, num_rows,w2)
-testFile(test_data, num_rows,w3)
-testFile(test_data, num_rows,w4)
+classify(test_data, num_rows,w1)
+classify(test_data, num_rows,w2)
+classify(test_data, num_rows,w3)
+classify(test_data, num_rows,w4)
 
 #print count/float(num_rows)
+def test(data,weight_vec):
+    error_metrics = [0, 0, 0, 0]
+    for i in range(len(data)):
+        diff_val = np.dot(weight_vec, data[i])
+        if diff_val < 0 and (train_class[i] == 4):
+            error_metrics[3] += 1
+        elif diff_val > 0 and (train_class[i] == 2):
+            error_metrics[1] += 1
+        elif diff_val > 0 and (train_class[i] == 4):
+            error_metrics[0] += 1
+        elif diff_val < 0 and (train_class[i] == 2):
+            error_metrics[2] += 1
+    recall = float(error_metrics[0])/(error_metrics[0]+error_metrics[3])
+    precision = float(error_metrics[0])/(error_metrics[0]+error_metrics[1])
+    accuracy = float(error_metrics[0]+error_metrics[2])/sum(error_metrics)

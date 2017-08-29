@@ -104,3 +104,18 @@ classify(test_data, num_rows, a1)
 classify(test_data, num_rows, a2)
 
 # print count/float(num_rows)
+def test(data,weight_vec):
+    error_metrics = [0, 0, 0, 0]
+    for i in range(len(data)):
+        diff_val = np.dot(weight_vec, data[i])
+        if diff_val < 0 and (train_class[i] == 4):
+            error_metrics[3] += 1
+        elif diff_val > 0 and (train_class[i] == 2):
+            error_metrics[1] += 1
+        elif diff_val > 0 and (train_class[i] == 4):
+            error_metrics[0] += 1
+        elif diff_val < 0 and (train_class[i] == 2):
+            error_metrics[2] += 1
+    recall = float(error_metrics[0])/(error_metrics[0]+error_metrics[3])
+    precision = float(error_metrics[0])/(error_metrics[0]+error_metrics[1])
+    accuracy = float(error_metrics[0]+error_metrics[2])/sum(error_metrics)
