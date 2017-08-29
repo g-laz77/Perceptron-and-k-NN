@@ -4,7 +4,7 @@ import sys
 import math
 
 train = sys.argv[1]
-#test = sys.argv[2]
+test = sys.argv[2]
 
 mapp = list()
 for i in range(10):
@@ -58,7 +58,7 @@ def best_split(dataset):
 	least_entropy = 10000
 	best_groups = None
 	for index in range(len(dataset[0])):
-		print "---------------------------",index,"---------------------------"
+		#print "---------------------------",index,"---------------------------"
 		if index == 6:
 			continue
 		
@@ -70,22 +70,22 @@ def best_split(dataset):
 		for i in distinct:
 			dict_dis.update({i : counter})
 			counter += 1
-		if len(distinct) == 2:
+		if isinstance(distinct[0], int) and distinct[0] == 0 or distinct[0] == 1:
 			for i in range(len(distinct)):
 				groups = train_split(index, distinct[i], distinct, dataset, "binary")
 				entropy = entropy_cost(groups, classes)
-				print(entropy,index,distinct[i])
+				#print(entropy,index,distinct[i])
 				if entropy <= least_entropy:
 					best_index = index
 					best_value = distinct[i]
 					least_entropy = entropy
 					best_groups = groups
 
-		elif len(distinct) == 3 or len(distinct) == 10:   # Non-continuous data
+		elif isinstance(distinct[0], (str, unicode)):   # Non-continuous data
 			for i in range(len(distinct)):
 				groups = train_split(index, dict_dis[distinct[i]], dict_dis, dataset, "discrete")
 				entropy = entropy_cost(groups, classes)
-				print(entropy,index,distinct[i],dict_dis[distinct[i]])				
+				#print(entropy,index,distinct[i],dict_dis[distinct[i]])				
 				if entropy <= least_entropy:
 					best_index = index
 					best_value = distinct[i]
@@ -98,13 +98,13 @@ def best_split(dataset):
 			for val in range(100):
 				groups = train_split(index, float((mx-mn)*val)/100,distinct, dataset,"continuous")
 				entropy = entropy_cost(groups, classes)
-				print(entropy,index,float((mx-mn)*val)/100)				
+				#print(entropy,index,float((mx-mn)*val)/100)				
 				if entropy <= least_entropy:
 					best_index = index
 					best_value = float((mx-mn)*0.01*val)
 					least_entropy = entropy
 					best_groups = groups
-		print "Least Entropy:",least_entropy,best_index,best_value
+		#print "Least Entropy:",least_entropy,best_index,best_value
 
 	return {'index':best_index, 'value':best_value, 'groups':best_groups}
 
@@ -116,7 +116,7 @@ def node_terminal_eval(group):
 # Create child splits for a node or make terminal
 def split(node, max_depth, min_size, depth):
 	left, right = node['groups']
-	print("\n----------------------Right----------------------")
+	# print("\n----------------------Right----------------------")
 	# for ite in right:
 	# 	print(ite[6])
 	del(node['groups'])
@@ -124,30 +124,30 @@ def split(node, max_depth, min_size, depth):
 	if depth >= max_depth:
 		node['l'] = node_terminal_eval(left) 
 		node['r'] = node_terminal_eval(right)
-		print "depth"
+		#print "depth"
 		return
 	#to prevent overfitting
 	if not left or not right:
 		node['l'] = node['r'] = node_terminal_eval(left + right)
-		print "Nothing"
+		#print "Nothing"
 		return
 
 	if len(left) <= min_size:
 		node['l'] = node_terminal_eval(left)
-		print "left_size" 
+		#print "left_size" 
 	else:
-		print "split_left"
+		#print "split_left"
 		# print(left)
 		node['l'] = best_split(left)
 		split(node['l'], max_depth, min_size, depth+1)
 
 	if len(right) <= min_size:
-		print "right_size"
+		#print "right_size"
 		node['r'] = node_terminal_eval(right)
 	else:
-		print "split_right"
+		#print "split_right"
 		node['r'] = best_split(right)
-		print node['r']
+		#print node['r']
 		split(node['r'], max_depth, min_size, depth+1)
  
 # Build a decision tree
@@ -160,9 +160,84 @@ datafile = pd.read_csv(train)  #("~/Documents/smai/assignment-1/dummy/datasets/q
 train_data = datafile.iloc[1:,0:].values
 train_class = datafile.iloc[1:,6]
 num_rows, num_cols = train_data.shape[:]
+data_val = list(train_data[i][8] for i in range(len(train_data)))
+distinct = list(set(dt for dt in data_val))
+sales = dict()
+counter = 0
+for i in distinct:
+	sales.update({i : counter})
+	counter += 1
+data_val = list(train_data[i][9] for i in range(len(train_data)))
+distinct = list(set(dt for dt in data_val))
+salary = dict()
+counter = 0
+for i in distinct:
+	salary.update({i : counter})
+	counter += 1
 
-
-root = build_tree(train_data,5,50)
+decision_tree = build_tree(train_data,5,50)
 # while(1):
-print root
+#print root
+def print_tree(root):
+	if isinstance(root,int):
+		print(root)
+	else:
+		print root['index'],root['value']
+		print_tree(root['l'])
+		print_tree(root['r'])
+	
 # 	k = k['r']
+print_tree(decision_tree)
+
+def check(data_vec,node):
+	if isinstance(node,int):
+		#print node
+		return int(node)
+	
+	if isinstance(node['value'],str):
+		if node['value'] == 'high' or node['value'] == 'medium' or node['value'] == 'low':
+			if salary[node['value']] >= salary[data_vec[node['index']]]:
+				# print node['value'], data_vec[node['index']]
+				return check(data_vec,node['l'])
+			elif salary[node['value']] < salary[data_vec[node['index']]]:
+				# print node['value'], data_vec[node['index']]		
+				return check(data_vec,node['r'])
+		else:
+			if sales[node['value']] >= sales[data_vec[node['index']]]:
+				# print node['value'], data_vec[node['index']]
+				return check(data_vec,node['l'])
+			elif sales[node['value']] < sales[data_vec[node['index']]]:
+				# print node['value'], data_vec[node['index']]		
+				return check(data_vec,node['r'])
+	
+	elif isinstance(node['value'],int) and node['value'] == 0 or node['value'] == 1:
+		if node['value'] == 0:
+			# print node['value'], data_vec[node['index']]
+			return check(data_vec,node['l'])
+		else:
+			# print node['value'], data_vec[node['index']]
+			return check(data_vec,node['r'])
+	else:
+		if node['value'] >= data_vec[node['index']]:
+			# print node['value'], data_vec[node['index']]
+			return check(data_vec,node['l'])
+		elif node['value'] < data_vec[node['index']]:
+			# print node['value'], data_vec[node['index']]		
+			return check(data_vec,node['r'])
+
+datafile = pd.read_csv(test)  #("~/Documents/smai/assignment-1/dummy/datasets/q3/train.csv")
+test_data = datafile.iloc[0:,0:].values
+# test_class = datafile.iloc[1:,6]
+num_rows, num_cols = test_data.shape[:]
+# print num_rows, num_cols
+
+classified = [-1 for i in range(num_rows)]
+# print classified
+
+def test_tree(data, num_rows):
+	for i in range(num_rows):
+		classified[i] = check(data[i],decision_tree)
+
+test_tree(test_data,num_rows)
+for i in range(len(classified)):
+	print classified[i]
