@@ -117,7 +117,7 @@ if __name__ == '__main__':
                                     vocab[word] = i
                                     i = i + 1
 
-        print len(vocab),trainsz, testsz
+        # print len(vocab),trainsz, testsz
 
         trainVec = FeatureVector(len(vocab),trainsz)
         testVec = FeatureVector(len(vocab),testsz)
@@ -140,9 +140,10 @@ if __name__ == '__main__':
 
         knn = KNN(trainVec,testVec)
         y_predicted = knn.classify() 
-        print(y_predicted)
-        print(testVec.Y)
+        for clas in y_predicted:
+            print(classes[clas][:-1])
+        #print(testVec.Y)
         knn.metric.get_confmatrix(y_predicted,testVec.Y)
         #print(knn.metric.conf_matrix)
-        print(knn.metric.score())
+        # print(knn.metric.score())
 	

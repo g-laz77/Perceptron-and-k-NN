@@ -38,10 +38,8 @@ while(1):
         #print(i)
         w, err = correct(i, w)
         count += err
-
-    #print count 
+        
     if count == 0:
-        #print "Trained the weight vector"
         break
 
 #Testing
