@@ -36,7 +36,7 @@ class KNN(object):
 		self.metric = Metrics('accuracy','f1')
 
 
-	def classify(self, k=5):
+	def classify(self, k=7):
             y_pred = list()
             for i in range(self.Y_test.shape[0]):
                 distances = list()

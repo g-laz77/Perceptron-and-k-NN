@@ -157,8 +157,8 @@ def build_tree(train, max_depth, min_size):
 	return root
 
 datafile = pd.read_csv(train)  #("~/Documents/smai/assignment-1/dummy/datasets/q3/train.csv")
-train_data = datafile.iloc[1:,0:].values
-train_class = datafile.iloc[1:,6]
+train_data = datafile.iloc[0:,0:].values
+train_class = datafile.iloc[0:,6]
 num_rows, num_cols = train_data.shape[:]
 data_val = list(train_data[i][8] for i in range(len(train_data)))
 distinct = list(set(dt for dt in data_val))
@@ -175,7 +175,7 @@ for i in distinct:
 	salary.update({i : counter})
 	counter += 1
 
-decision_tree = build_tree(train_data,5,50)
+decision_tree = build_tree(train_data,10,50)
 # while(1):
 #print root
 def print_tree(root):
@@ -187,7 +187,7 @@ def print_tree(root):
 		print_tree(root['r'])
 	
 # 	k = k['r']
-print_tree(decision_tree)
+#print_tree(decision_tree)
 
 def check(data_vec,node):
 	if isinstance(node,int):
@@ -235,9 +235,19 @@ classified = [-1 for i in range(num_rows)]
 # print classified
 
 def test_tree(data, num_rows):
+	count = 0
 	for i in range(num_rows):
 		classified[i] = check(data[i],decision_tree)
+		if classified[i] == data[i][6]:
+			count += 1
+	# print float(count)/num_rows
 
 test_tree(test_data,num_rows)
+c1 = c2 = 0
 for i in range(len(classified)):
-	print classified[i]
+	# if test_data[i][6] == 1:
+	# 	c1 += 1
+	# 	if classified[i]:
+	# 		c2 += 1
+	print classified[i]#,test_data[i][6]
+# print float(c2)/c1
